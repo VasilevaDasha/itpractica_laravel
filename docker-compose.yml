@@ -1,0 +1,50 @@
+version: "3.8"
+services:
+
+ #PHP Service
+ app:
+  build:
+   context: .
+   dockerfile: ./docker/php/Dockerfile
+  image: php:8.1-fpm
+  container_name: php
+  restart: unless-stopped
+  tty: true
+  volumes:
+    - ./:/var/www
+ 
+ #Nginx Service
+ webserver:
+  image: nginx:alpine
+  container_name: nginx 
+  restart: unless-stopped
+  tty: true
+  ports:
+    - "8000:80"
+  volumes:
+    - ./:/var/www
+    - ./docker/nginx/conf.d:/etc/nginx/conf.d/
+
+ #MySQL Service
+ db:
+  image: mysql:5.7.24
+  container_name: db
+  restart: unless-stopped
+  tty: true
+  environment:
+      MYSQL_ROOT_PASSWORD: root 
+      MYSQL_DATABASE: itpractica_laravel
+      
+
+ #PhpMyAdmin Service
+ phpmyadmin:
+   image: phpmyadmin/phpmyadmin
+   container_name: pma
+   environment:
+    - PMA_HOSTS=db
+    - PMA_USER=root
+    - PMA_PASSWORD=root
+   ports:
+    - "8081:80"
+
+  
